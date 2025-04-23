@@ -1,0 +1,26 @@
+{
+    "name": "live-controls/trellog",
+    "description": "Error logging from Laravel to Trello",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "LiveControls\\Trellog\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Roman Wanner",
+            "email": "60240491+daredloco@users.noreply.github.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "LiveControls\\Trellog\\TrellogServiceProvider"
+            ]
+        }
+    },
+    "require-dev": {
+        "orchestra/testbench": "^7"
+    }
+}
