@@ -8,7 +8,7 @@ use Illuminate\Foundation\Queue\Queueable;
 use LiveControls\Trellog\Trellog;
 use Throwable;
 
-class SendWhatsappLightTextMessage implements ShouldQueue
+class SendTrellog implements ShouldQueue
 {
     use Queueable, Batchable;
 
