@@ -35,7 +35,7 @@ class Trellog
             $client = new Client();
 
             //Search for existing error log
-            $query = urlencode($fingerprint);
+            $query = urlencode("[$fingerprint]");
             $searchUrl = "https://api.trello.com/1/search?query={$query}&modelTypes=cards&card_fields=name,idList,desc&cards_limit=10&key={$apiKey}&token={$token}";
             $response = $client->get($searchUrl);
             $searchResult = json_decode($response->getBody()->getContents(), true);
