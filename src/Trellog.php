@@ -90,6 +90,7 @@ class Trellog
                 "**Fingerprint:** $fingerprint",
                 "**Total Reports:** 1",
                 "**Latest Report:** ".now()->format('d/m/Y H:i:s'),
+                "**Latest Version:** ".config('app.version', 'Unknown'),
                 "",
                 "**Stack trace:**",
                 "```",
