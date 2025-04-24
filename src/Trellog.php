@@ -24,12 +24,12 @@ class Trellog
             $message = $exception->getMessage();
             $file = $exception->getFile();
             $line = $exception->getLine();
-
+            $operationMode = (app()->hasDebugModeEnabled() ? "DEV" : "PRO");
             //Generate Fingerprint
-            $fingerprint = hash('sha256', "{$class}|{$message}|{$file}|{$line}");
+            $fingerprint = hash('sha256', "{$class}|{$message}|{$file}|{$line}|{$operationMode}");
 
             //Generate Title
-            $title = "[{$fingerprint}] {$shortClass}: {$message}";
+            $title = "[{$fingerprint}] {$shortClass}: {$message} - {$operationMode}";
 
             $client = new Client();
 
@@ -80,6 +80,7 @@ class Trellog
 
             //If it does not exist, create a new card with the informations and amount set to 1
             $description = implode("\n", [
+                "**Production:** ".(app()->hasDebugModeEnabled() ? "Yes" : "No"),
                 "**Exception:** $shortClass",
                 "**Message:** $message",
                 "**Code:** " . $exception->getCode(),
