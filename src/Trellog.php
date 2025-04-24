@@ -25,6 +25,7 @@ class Trellog
             $file = $exception->getFile();
             $line = $exception->getLine();
             $operationMode = (app()->hasDebugModeEnabled() ? "DEV" : "PRO");
+
             //Generate Fingerprint
             $fingerprint = hash('sha256', "{$class}|{$message}|{$file}|{$line}|{$operationMode}");
 
@@ -60,11 +61,11 @@ class Trellog
                     $matches = [];
                     $amount = 1;
 
-                    if(preg_match('/\*\*Amount:\*\* (\d+)/', $desc, $matches)){
+                    if(preg_match('/\*\*Total Reports:\*\* (\d+)/', $desc, $matches)){
                         $amount = (int)$matches[1] + 1;
-                        $desc = preg_replace('/\*\*Amount:\*\* \d+/', "**Amount:** {$amount}", $desc);
+                        $desc = preg_replace('/\*\*Total Reports:\*\* \d+/', "**Total Reports:** {$amount}", $desc);
                     }else{
-                        $desc .= "\n\n**Amount:** {$amount}";
+                        $desc .= "\n\n**Total Reports:** {$amount}";
                     }
 
                     // Update the card description
@@ -80,20 +81,21 @@ class Trellog
 
             //If it does not exist, create a new card with the informations and amount set to 1
             $description = implode("\n", [
-                "**Production:** ".(app()->hasDebugModeEnabled() ? "Yes" : "No"),
+                "**Operation Mode:** $operationMode",
                 "**Exception:** $shortClass",
                 "**Message:** $message",
                 "**Code:** " . $exception->getCode(),
                 "**File:** $file",
                 "**Line:** $line",
+                "**Fingerprint:** $fingerprint",
+                "**Total Reports:** 1",
+                "**Latest Report:** ".now()->format('d/m/Y H:i:s'),
                 "",
                 "**Stack trace:**",
                 "```",
                 $exception->getTraceAsString(),
                 "```",
-                "",
-                "**Fingerprint:** $fingerprint",
-                "**Amount:** 1"
+                ""
             ]);
 
             $createUrl = 'https://api.trello.com/1/cards';
