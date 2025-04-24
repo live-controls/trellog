@@ -5,11 +5,12 @@ namespace LiveControls\Trellog;
 use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\ErrorHandler\Exception\FlattenException;
 use Throwable;
 
 class Trellog
 {
-    public static function error(Throwable $exception): bool
+    public static function error(FlattenException $exception): bool
     {
         try{
             //Load config variables
@@ -18,8 +19,8 @@ class Trellog
             $listId = config('trellog.list_errors');
 
             //Fetch exception informations
-            $class = get_class($exception);
-            $shortClass = (new \ReflectionClass($exception))->getShortName();
+            $class = $exception->getClass();
+            $shortClass = class_basename($class);
             $message = $exception->getMessage();
             $file = $exception->getFile();
             $line = $exception->getLine();

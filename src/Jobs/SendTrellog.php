@@ -6,6 +6,7 @@ use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use LiveControls\Trellog\Trellog;
+use Symfony\Component\ErrorHandler\Exception\FlattenException;
 use Throwable;
 
 class SendTrellog implements ShouldQueue
@@ -19,7 +20,7 @@ class SendTrellog implements ShouldQueue
      */
     public function __construct(Throwable $ex)
     {
-        $this->ex = $ex;
+        $this->ex = FlattenException::createFromThrowable($ex);
         $this->onQueue(config('trellog.queue'));
     }
 
