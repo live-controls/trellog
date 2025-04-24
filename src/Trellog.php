@@ -7,6 +7,7 @@ use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\ErrorHandler\Exception\FlattenException;
 use Throwable;
+use Illuminate\Support\Str;
 
 class Trellog
 {
@@ -29,13 +30,14 @@ class Trellog
             //Generate Fingerprint
             $fingerprint = hash('sha256', "{$class}|{$message}|{$file}|{$line}|{$operationMode}");
 
+            $titleMessage = Str::limit($message, 25, '...', true);
             //Generate Title
-            $title = "[{$fingerprint}] {$shortClass}: {$message} - {$operationMode}";
+            $title = "[{$fingerprint}] {$shortClass}: {$titleMessage} - {$operationMode}";
 
             $client = new Client();
 
             //Search for existing error log
-            $query = urlencode("[$fingerprint]");
+            $query = urlencode($fingerprint);
             $searchUrl = "https://api.trello.com/1/search?query={$query}&modelTypes=cards&card_fields=name,idList,desc&cards_limit=10&key={$apiKey}&token={$token}";
             $response = $client->get($searchUrl);
             $searchResult = json_decode($response->getBody()->getContents(), true);
