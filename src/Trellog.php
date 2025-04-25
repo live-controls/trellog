@@ -93,12 +93,6 @@ class Trellog
                 "**Total Reports:** 1",
                 "**Latest Report:** ".now()->format('d/m/Y H:i:s'),
                 "**Latest Version:** ".config('app.version', 'Unknown'),
-                "",
-                "**Stack trace:**",
-                "```",
-                $exception->getTraceAsString(),
-                "```",
-                ""
             ]);
 
             $createUrl = 'https://api.trello.com/1/cards';
@@ -117,7 +111,31 @@ class Trellog
             $createResponse = $client->post($createUrl, [
                 'json' => $params,
             ]);
-            return $createResponse->getStatusCode() == 201;
+            $createdCard = json_decode($createResponse->getBody()->getContents(), true);
+            $cardId = $createdCard['id'] ?? null;
+
+            //Upload Stacktrace as attachment
+            $client->request('POST', "https://api.trello.com/1/cards/{$cardId}/attachments", [
+                'multipart' => [
+                    [
+                        'name'     => 'file',
+                        'contents' => $exception->getTraceAsString(),
+                        'filename' => "stacktrace_".now()->timestamp.".txt",
+                    ],
+                    [
+                        'name'     => 'key',
+                        'contents' => $apiKey,
+                    ],
+                    [
+                        'name'     => 'token',
+                        'contents' => $token,
+                    ],
+                    [
+                        'name'     => 'name',
+                        'contents' => 'Stack Trace',
+                    ],
+                ]
+            ]);
         }catch(\Throwable $ex)
         {
             Log::error("[TRELLOG] ".$ex->getMessage(), [
@@ -125,5 +143,6 @@ class Trellog
             ]);
             return false;
         }
+        return true;
     }
 }
