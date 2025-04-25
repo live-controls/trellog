@@ -48,8 +48,8 @@ class Trellog
                     if ($card['idList'] !== $listId){
                         $moveUrl = "https://api.trello.com/1/cards/{$card['id']}/idList?key={$apiKey}&token={$token}";
                         $moveResponse = $client->put($moveUrl, [
-                            'form_params' => [
-                                'value' => $listId, // The new list ID
+                            'json' => [
+                                'value' => $listId, //The new list ID
                             ],
                         ]);
                         if($moveResponse->getStatusCode() !== 200)
@@ -110,8 +110,12 @@ class Trellog
                 'desc'  => $description,
             ];
 
+            if(app()->hasDebugModeEnabled()){
+                Log::debug($params);
+            }
+
             $createResponse = $client->post($createUrl, [
-                'form_params' => $params,
+                'json' => $params,
             ]);
             return $createResponse->getStatusCode() == 201;
         }catch(\Throwable $ex)
