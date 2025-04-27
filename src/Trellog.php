@@ -4,6 +4,7 @@ namespace LiveControls\Trellog;
 
 use Exception;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\ErrorHandler\Exception\FlattenException;
 use Throwable;
@@ -29,6 +30,12 @@ class Trellog
 
             //Generate Fingerprint
             $fingerprint = hash('sha256', "{$class}|{$message}|{$file}|{$line}|{$operationMode}");
+
+            
+            if(Cache::get("sent_report_{$fingerprint}", false)){
+                return true; //Can return, because the same report was already sent within the last 2 minutes
+            }
+            Cache::put("sent_report_{$fingerprint}", true, now()->addMinutes(2));
 
             $titleMessage = Str::limit($message, 50, '...', true);
             //Generate Title
