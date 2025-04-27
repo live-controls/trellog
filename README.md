@@ -21,4 +21,4 @@ Add to bootstrap/app.php:
 - 'token': Your Trello API tokenn
 - 'list_errors' => The Id of the list you want to upload the errors to. This can be found by https://trello.com/b/LINK_TO_YOUR_BOARD.json
 - 'queue' => The queue TRELLOG will be running on
-- 'cooldown' => env('TRELLOG_COOLDOWN', false) //Cooldown of a message with the same fingerprint in minutes
+- 'cooldown' => The cooldown in minutes before a report with the same fingerprint is uploaded again. If set to FALSE this feature will be disabled. Important to know that this only works with Cache that support TTL!

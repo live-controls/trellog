@@ -32,11 +32,12 @@ class Trellog
             $fingerprint = hash('sha256', "{$class}|{$message}|{$file}|{$line}|{$operationMode}");
 
             //Only call the cooldown if it is set and NOT false
-            if(config('trellog.cooldown', false)){
+            $cooldown = (int)config('trellog.cooldown', false);
+            if(is_int($cooldown) && $cooldown != 0){
                 if(Cache::get("sent_report_{$fingerprint}", false)){
                     return true; //Can return, because the same report was already sent within the last trellog.cooldown minutes
                 }
-                Cache::put("sent_report_{$fingerprint}", true, now()->addMinutes(config('trellog.cooldown', 2)));
+                Cache::put("sent_report_{$fingerprint}", true, now()->addMinutes($cooldown));
             }
 
             $titleMessage = Str::limit($message, 50, '...', true);
