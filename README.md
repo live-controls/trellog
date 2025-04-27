@@ -15,3 +15,10 @@ Add to bootstrap/app.php:
     });
 })
 ```
+
+### Configuration
+- 'apikey': Your Trello API Key
+- 'token': Your Trello API tokenn
+- 'list_errors' => The Id of the list you want to upload the errors to. This can be found by https://trello.com/b/LINK_TO_YOUR_BOARD.json
+- 'queue' => The queue TRELLOG will be running on
+- 'cooldown' => env('TRELLOG_COOLDOWN', false) //Cooldown of a message with the same fingerprint in minutes
