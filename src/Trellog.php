@@ -33,9 +33,9 @@ class Trellog
 
             
             if(Cache::get("sent_report_{$fingerprint}", false)){
-                return true; //Can return, because the same report was already sent within the last 2 minutes
+                return true; //Can return, because the same report was already sent within the last trellog.cooldown minutes
             }
-            Cache::put("sent_report_{$fingerprint}", true, now()->addMinutes(2));
+            Cache::put("sent_report_{$fingerprint}", true, now()->addMinutes(config('trellog.cooldown', 2)));
 
             $titleMessage = Str::limit($message, 50, '...', true);
             //Generate Title
