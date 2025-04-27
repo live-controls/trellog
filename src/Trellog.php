@@ -30,20 +30,20 @@ class Trellog
             //Generate Fingerprint
             $fingerprint = hash('sha256', "{$class}|{$message}|{$file}|{$line}|{$operationMode}");
 
-            $titleMessage = Str::limit($message, 25, '...', true);
+            $titleMessage = Str::limit($message, 50, '...', true);
             //Generate Title
-            $title = "[{$fingerprint}] {$shortClass}: {$titleMessage} - {$operationMode}";
+            $title = "{$shortClass}: {$titleMessage} - {$operationMode}";
 
             $client = new Client();
 
             //Search for existing error log
             $query = urlencode($fingerprint);
-            $searchUrl = "https://api.trello.com/1/search?query={$query}&modelTypes=cards&card_fields=name,idList,desc&cards_limit=10&key={$apiKey}&token={$token}";
+            $searchUrl = "https://api.trello.com/1/search?query={$query}&modelTypes=cards&card_fields=idList,desc&cards_limit=10&key={$apiKey}&token={$token}";
             $response = $client->get($searchUrl);
             $searchResult = json_decode($response->getBody()->getContents(), true);
 
             foreach ($searchResult['cards'] ?? [] as $card){
-                if (strpos($card['name'], $fingerprint) !== false){
+                if (strpos($card['desc'], $fingerprint) !== false){
                     //Card found, move if necessary
                     if ($card['idList'] !== $listId){
                         $moveUrl = "https://api.trello.com/1/cards/{$card['id']}/idList?key={$apiKey}&token={$token}";
