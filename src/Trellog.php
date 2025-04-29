@@ -4,6 +4,7 @@ namespace LiveControls\Trellog;
 
 use Exception;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\ErrorHandler\Exception\FlattenException;
@@ -93,6 +94,7 @@ class Trellog
 
             //If it does not exist, create a new card with the informations and amount set to 1
             $description = implode("\n", [
+                "**User:** ".(Auth::user()->id ?? 'None'),
                 "**Operation Mode:** $operationMode",
                 "**Exception:** $shortClass",
                 "**Message:** $message",
