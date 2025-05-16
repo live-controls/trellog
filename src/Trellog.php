@@ -74,6 +74,7 @@ class Trellog
                     $matches = [];
                     $amount = 1;
 
+                    //Update total reports
                     if(preg_match('/\*\*Total Reports:\*\* (\d+)/', $desc, $matches)){
                         $amount = (int)$matches[1] + 1;
                         $desc = preg_replace('/\*\*Total Reports:\*\* \d+/', "**Total Reports:** {$amount}", $desc);
@@ -81,12 +82,50 @@ class Trellog
                         $desc .= "\n\n**Total Reports:** {$amount}";
                     }
 
+                    //Update latest report
+                    $latestReport = now()->format('d/m/Y H:i:s');
+                    if (preg_match('/\*\*Latest Report:\*\* .+/', $desc)) {
+                        $desc = preg_replace('/\*\*Latest Report:\*\* .+/', "**Latest Report:** {$latestReport}", $desc);
+                    } else {
+                        $desc .= "\n**Latest Report:** {$latestReport}";
+                    }
+
+                    //Update latest version
+                    $latestVersion = config('app.version', 'Unknown'); // Replace this with your actual version dynamically
+                    if (preg_match('/\*\*Latest Version:\*\* .+/', $desc)) {
+                        $desc = preg_replace('/\*\*Latest Version:\*\* .+/', "**Latest Version:** {$latestVersion}", $desc);
+                    } else {
+                        $desc .= "\n**Latest Version:** {$latestVersion}";
+                    }
                     // Update the card description
                     $updateUrl = "https://api.trello.com/1/cards/{$card['id']}?" . http_build_query([
                         'key' => $apiKey,
                         'token' => $token,
                         'desc' => $desc,
                     ]);
+
+                    $client->request('POST', "https://api.trello.com/1/cards/{$card['id']}/attachments", [
+                        'multipart' => [
+                            [
+                                'name'     => 'file',
+                                'contents' => $exception->getTraceAsString(),
+                                'filename' => "stacktrace_".now()->timestamp."_{$amount}.txt",
+                            ],
+                            [
+                                'name'     => 'key',
+                                'contents' => $apiKey,
+                            ],
+                            [
+                                'name'     => 'token',
+                                'contents' => $token,
+                            ],
+                            [
+                                'name'     => 'name',
+                                'contents' => 'Stack Trace',
+                            ],
+                        ]
+                    ]);
+
                     $updateResponse = $client->put($updateUrl);
                     return $updateResponse->getStatusCode() == 200;
                 }
