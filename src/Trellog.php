@@ -15,6 +15,11 @@ class Trellog
 {
     public static function error(FlattenException $exception): bool
     {
+        if(config('trellog.enabled', true) == false){
+            //Returns true if trellog is disabled as it can be ignored
+            return true;
+        }
+
         try{
             //Load config variables
             $apiKey = config('trellog.apikey');
